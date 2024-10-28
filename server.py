@@ -34,21 +34,18 @@ def handle_client(client_socket):
                 client_socket.send(response.encode())
         elif command == "DELETE":
             errors = []
+            msg_ids = []
             while True:
-                msg_id = client_socket.recv(1024).decode().strip()
+                line = client_socket.recv(1024).decode().strip()
                 if line == "#":
                     break
+                msg_ids.append(line)      
+            for msg_id in msg_ids:
                 if msg_id.isdigit() and int(msg_id) in messages:
                     del messages[int(msg_id)]
                 else:
-                    errors.append(msg_id)
-            
-            #for msg_id in msg_ids:
-                #if msg_id.isdigit() and int(msg_id) in messages:
-                    #del messages[int(msg_id)]
-                #else:
                     #print("ERROR - Wrong ID")
-                    #errors.append(msg_id)
+                    errors.append(msg_id)
             if errors:
                 client_socket.send(b"ERROR - Wrong ID")
             else:
